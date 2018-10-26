@@ -44,7 +44,7 @@ import software.amazon.awssdk.services.protocoljsonrpc.model.ProtocolJsonRpcExce
  * Exception related tests for AWS/JSON RPC.
  */
 public class AwsJsonExceptionTest {
-    private static final String PATH = "/";
+    private static final String PATH = "/2016-03-11/allTypes";
 
     @Rule
     public WireMockRule wireMock = new WireMockRule(0);

@@ -39,7 +39,9 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.async.SdkPublisher;
+import software.amazon.awssdk.http.Protocol;
 import software.amazon.awssdk.http.SdkCancellationException;
+import software.amazon.awssdk.http.SdkHttpConfigurationOption;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.kinesis.model.ConsumerStatus;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
@@ -50,6 +52,7 @@ import software.amazon.awssdk.services.kinesis.model.SubscribeToShardEvent;
 import software.amazon.awssdk.services.kinesis.model.SubscribeToShardEventStream;
 import software.amazon.awssdk.services.kinesis.model.SubscribeToShardResponse;
 import software.amazon.awssdk.services.kinesis.model.SubscribeToShardResponseHandler;
+import software.amazon.awssdk.utils.AttributeMap;
 
 public class SubscribeToShardIntegrationTest {
 
@@ -63,7 +66,14 @@ public class SubscribeToShardIntegrationTest {
     public void setup() throws InterruptedException {
         streamName = "subscribe-to-shard-integ-test-" + System.currentTimeMillis();
 
+        AttributeMap attributeMap = AttributeMap.builder()
+                                                .put(SdkHttpConfigurationOption.PROTOCOL, Protocol.HTTP2)
+                                                .build();
+
+        //SdkAsyncHttpClient sdkAsyncHttpClient = NettyNioAsyncHttpClient.builder().buildWithDefaults(attributeMap);
+
         client = KinesisAsyncClient.builder()
+                                   //.httpClient(sdkAsyncHttpClient)
                                    .build();
         client.createStream(r -> r.streamName(streamName)
                                   .shardCount(1)).join();

@@ -39,7 +39,7 @@ import software.amazon.awssdk.services.protocoljsonrpc.model.ProtocolJsonRpcExce
 
 public class AsyncAwsJsonRetryTest {
 
-    private static final String PATH = "/";
+    private static final String PATH = "/2016-03-11/allTypes";
     private static final String JSON_BODY = "{\"StringMember\":\"foo\"}";
 
     @Rule

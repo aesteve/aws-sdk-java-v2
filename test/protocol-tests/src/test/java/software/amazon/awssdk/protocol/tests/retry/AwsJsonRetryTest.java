@@ -16,9 +16,9 @@
 package software.amazon.awssdk.protocol.tests.retry;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -39,7 +39,6 @@ import software.amazon.awssdk.services.protocoljsonrpc.model.ProtocolJsonRpcExce
 
 public class AwsJsonRetryTest {
 
-    private static final String PATH = "/";
     private static final String JSON_BODY = "{\"StringMember\":\"foo\"}";
 
     @Rule
@@ -58,14 +57,14 @@ public class AwsJsonRetryTest {
 
     @Test
     public void shouldRetryOn500() {
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at 500")
                     .whenScenarioStateIs(Scenario.STARTED)
                     .willSetStateTo("first attempt")
                     .willReturn(aResponse()
                                     .withStatus(500)));
 
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at 500")
                     .whenScenarioStateIs("first attempt")
                     .willSetStateTo("second attempt")
@@ -79,7 +78,7 @@ public class AwsJsonRetryTest {
 
     @Test
     public void shouldRetryOnRetryableAwsErrorCode() {
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at PriorRequestNotComplete")
                     .whenScenarioStateIs(Scenario.STARTED)
                     .willSetStateTo("first attempt")
@@ -89,7 +88,7 @@ public class AwsJsonRetryTest {
                                     .withBody("\"{\"__type\":\"PriorRequestNotComplete\",\"message\":\"Blah "
                                               + "error\"}\"")));
 
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at PriorRequestNotComplete")
                     .whenScenarioStateIs("first attempt")
                     .willSetStateTo("second attempt")
@@ -103,7 +102,7 @@ public class AwsJsonRetryTest {
 
     @Test
     public void shouldRetryOnAwsThrottlingErrorCode() {
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at SlowDown")
                     .whenScenarioStateIs(Scenario.STARTED)
                     .willSetStateTo("first attempt")
@@ -113,7 +112,7 @@ public class AwsJsonRetryTest {
                                     .withBody("\"{\"__type\":\"SlowDown\",\"message\":\"Blah "
                                               + "error\"}\"")));
 
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at SlowDown")
                     .whenScenarioStateIs("first attempt")
                     .willSetStateTo("second attempt")
@@ -127,14 +126,14 @@ public class AwsJsonRetryTest {
 
     @Test
     public void retryPolicyNone_shouldNotRetry() {
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at 500")
                     .whenScenarioStateIs(Scenario.STARTED)
                     .willSetStateTo("first attempt")
                     .willReturn(aResponse()
                                     .withStatus(500)));
 
-        stubFor(post(urlEqualTo(PATH))
+        stubFor(post(anyUrl())
                     .inScenario("retry at 500")
                     .whenScenarioStateIs("first attempt")
                     .willSetStateTo("second attempt")

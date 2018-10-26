@@ -28,7 +28,7 @@
       "name":"Ec2Types",
       "http":{
         "method":"POST",
-        "requestUri":"/"
+        "requestUri":"/2016-03-11/allTypes"
       },
       "input":{"shape":"Ec2TypesInput"},
       "output":{"shape":"Ec2TypesInput"}

@@ -1,0 +1,9 @@
+{
+  "ApiCallHttpClientBenchmark.run.UrlConnectionHttpClient":2000.00,
+  "ApiCallHttpClientBenchmark.run.ApacheHttpClient":1200,
+  "ApiCallProtocolBenchmark.run.xml":123,
+  "ApiCallProtocolBenchmark.run.json":123,
+  "ApiCallProtocolBenchmark.run.ec2":123,
+  "ApiCallProtocolBenchmark.run.query":123,
+  "ClientCreationBenchmark.run":123
+}

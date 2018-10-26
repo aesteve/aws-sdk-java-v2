@@ -15,7 +15,7 @@
       "name":"AllTypes",
       "http":{
         "method":"POST",
-        "requestUri":"/"
+        "requestUri":"/2016-03-11/allTypess"
       },
       "input":{"shape":"AllTypesStructure"},
       "output":{

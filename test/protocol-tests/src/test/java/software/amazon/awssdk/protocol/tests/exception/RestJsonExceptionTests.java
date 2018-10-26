@@ -27,6 +27,8 @@ import static util.exception.ExceptionTestUtils.stub404Response;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.AbstractMap.SimpleEntry;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +36,7 @@ import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.protocolrestjson.ProtocolRestJsonClient;
@@ -204,7 +207,21 @@ public class RestJsonExceptionTests {
 
 
     private void callAllTypes() {
-        client.allTypes(AllTypesRequest.builder().build());
+        AllTypesRequest allTypesRequest =
+            AllTypesRequest.builder()
+                           .stringMember("foo")
+                           .integerMember(123)
+                           .booleanMember(true)
+                           .floatMember((float) 123.0)
+                           .doubleMember(123.9)
+                           .longMember(123L)
+                           .simpleList("so simple")
+                           .listOfStructs(b -> b.stringMember("listOfStructs1").stringMember("listOfStructs1"))
+                           .timestampMember(LocalDateTime.now().toInstant(ZoneOffset.UTC))
+                           .structWithNestedTimestampMember(b -> b.nestedTimestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC)))
+                           .blobArg(SdkBytes.fromUtf8String("hello world"))
+                           .build();
+        client.allTypes(allTypesRequest);
     }
 
     private void assertThrowsServiceBaseException(Runnable runnable) {
