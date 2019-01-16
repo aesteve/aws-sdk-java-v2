@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+"""Run Integ Tests based on the changed files
+
+"""
+from subprocess import call, check_call, Popen, PIPE
+
+# Minimal modules to tests when core changes are detected.
+# s3 - xml, dynamodb - json, sqs - query
+
+minimum_modules_to_test = ["s3", "dynamodb", "sqs"]
+
+def check_diffs():
+    """
+    Retrieve the changed files
+    """
+
+    #  git diff HEAD~ HEAD --name-only
+    ret = Popen(["git", "diff", "HEAD~", "HEAD", "--name-only"], stdout=PIPE)
+
+    diff, stderr = ret.communicate()
+    return diff.splitlines(False)
+
+def get_modules(file_path):
+    """
+    Parse the changed file path and get the respective module names
+    """
+    path = file_path.split('/')
+    top_directory = path[0]
+
+    if top_directory in ["core", "http-clients", "codegen"]:
+        return minimum_modules_to_test
+    elif top_directory== "services":
+        return path[1]
+
+def run_tests(modules):
+    """
+    Run integration tests for the given modules
+    """
+    print("Running integ tests in the following modules: " + ', '.join(modules))
+    modules_to_include = ""
+
+    for m in modules:
+        modules_to_include += ":" + m + ","
+
+    # remove last comma
+    modules_to_include = modules_to_include[:-1]
+
+    # build necessary dependencies first
+    check_call(["mvn", "clean", "install", "-pl", modules_to_include, "-P", "quick", "--am", "-Dmaven.wagon.httpconnectionManager.maxPerRoute=2"])
+    check_call(["mvn", "verify", "-pl", modules_to_include, "-P", "integration-tests", "-Dfailsafe.rerunFailingTestsCount=1"])
+
+if __name__ == "__main__":
+    diffs = check_diffs()
+    modules = set()
+    for d in diffs:
+        module = get_modules(d)
+        if isinstance(module, list):
+            modules.update(module)
+        elif module: modules.add(module)
+
+    if modules:
+        run_tests(modules)
+    else:  print("No modules configured to run. Skipping integ tests")
